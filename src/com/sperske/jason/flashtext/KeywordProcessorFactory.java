@@ -27,7 +27,7 @@ public class KeywordProcessorFactory {
 	public static KeywordProcessor fromFlashTextFile(Stream<String> stream) {
 		return fromFlashTextFile(stream, false);
 	}
-	
+
 	public static KeywordProcessor fromFlashTextFile(Stream<String> stream, boolean case_sensitive) {
 		KeywordProcessor processor = new KeywordProcessor();
 		stream.forEach(line -> {
@@ -40,5 +40,4 @@ public class KeywordProcessorFactory {
 		});
 		return processor;
 	}
-
 }
