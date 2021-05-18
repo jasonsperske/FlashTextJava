@@ -34,11 +34,11 @@ public class KeywordProcessor {
 		this.CASE_SENSITIVE = case_sensitive;
 		this.rootNode = new KeywordTrieNode();
 	}
-	
+
 	public int length() {
 		return this._terms_in_trie;
 	}
-	
+
 	public boolean contains(String word) {
 		KeywordTrieNode current_keyword_trie_node = this.rootNode;
 		int chars_traveled = 0;
@@ -54,10 +54,10 @@ public class KeywordProcessor {
 				return false;
 			}
 		}
-		
+
 		return chars_traveled == word.length() && current_keyword_trie_node.contains(word);
 	}
-	
+
 	public String get(String word) {
 		KeywordTrieNode current_keyword_trie_node = this.rootNode;
 		int chars_traveled = 0;
@@ -73,14 +73,14 @@ public class KeywordProcessor {
 				return null;
 			}
 		}
-		
+
 		if (chars_traveled == word.length()) {
 			return current_keyword_trie_node.get();
 		} else {
 			return null;
 		}
 	}
-	
+
 	public void addKeyword(String word) {
 		// Clean Name is set to word when not defined
 		addKeyword(word, word);
@@ -91,31 +91,31 @@ public class KeywordProcessor {
 			word = word.toLowerCase();
 		}
 		LinkedList<Character> characters = word.chars().mapToObj(c -> (char)c).collect(Collectors.toCollection(LinkedList::new));
-		
+
 		this.rootNode.add(characters, word, clean_name);
 		this._terms_in_trie += 1;
 	}
-	
+
 	public Set<String> extractKeywords(String sentance) {
 		return extractKeywords(sentance.chars().mapToObj(c -> (char) c));
 	}
 	public Set<String> extractKeywords(Stream<Character> chars) {
 		return chars.collect(new Extractor(this.rootNode, this.CASE_SENSITIVE));
 	}
-	
+
 	class Extractor implements Collector<Character, Set<String>, Set<String>> {
 		private KeywordTrieNode currentNode;
 		private final KeywordTrieNode rootNode;
 		private final boolean CASE_SENSITIVE;
 		private Set<String> keywords;
-		
+
 		public Extractor(KeywordTrieNode rootNode, boolean caseSensitive) {
 			this.rootNode = rootNode;
 			this.currentNode = rootNode;
 			this.CASE_SENSITIVE = caseSensitive;
 			this.keywords = new HashSet<>();
 		}
-		
+
 		@Override
 		public BiConsumer<Set<String>, Character> accumulator() {
 			return (keywords, c) -> {
@@ -154,16 +154,16 @@ public class KeywordProcessor {
 		public Supplier<Set<String>> supplier() {
 			return () -> this.keywords;
 		}
-		
+
 	}
-	
+
 	public String replace(String sentance) {
 		return replace(sentance.chars().mapToObj(c -> (char) c));
 	}
 	private String replace(Stream<Character> chars) {
 		return chars.collect(new Replacer(this.rootNode, this.CASE_SENSITIVE));
 	}
-	
+
 	// Design adapted from https://codereview.stackexchange.com/a/199677/9162
 	class Replacer implements Collector<Character, StringBuffer, String> {
 		private StringBuffer out;
@@ -171,7 +171,7 @@ public class KeywordProcessor {
 		private KeywordTrieNode currentNode;
 		private final KeywordTrieNode rootNode;
 		private final boolean CASE_SENSITIVE;
-		
+
 		public Replacer(KeywordTrieNode rootNode, boolean caseSensitive) {
 			this.rootNode = rootNode;
 			this.currentNode = rootNode;
@@ -193,11 +193,7 @@ public class KeywordProcessor {
 					currentNode = node;
 				} else {
 					String keyword = currentNode.get();
-					if (keyword != null) {
-						out.append(keyword);					
-					} else {
-						out.append(buffer);
-					}
+					out.append(keyword != null ? keyword : buffer);
 					out.append(c);
 					buffer = new StringBuffer();
 					currentNode = this.rootNode;
@@ -233,7 +229,7 @@ public class KeywordProcessor {
 			return () -> this.out;
 		}
 	}
-	
+
 	public String toString() {
 		return this.rootNode.toString();
 	}
