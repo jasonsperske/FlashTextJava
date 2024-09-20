@@ -191,12 +191,21 @@ public class KeywordProcessor {
 				if (node != null) {
 					buffer.append(c);
 					currentNode = node;
+					return;
+				}
+
+				String keyword = currentNode.get();
+				out.append(keyword != null ? keyword : buffer);
+				buffer = new StringBuffer();
+				currentNode = this.rootNode;
+
+				// re-match root node
+				node = this.rootNode.get(match_c);
+				if (node != null) {
+					buffer.append(c);
+					currentNode = node;
 				} else {
-					String keyword = currentNode.get();
-					out.append(keyword != null ? keyword : buffer);
 					out.append(c);
-					buffer = new StringBuffer();
-					currentNode = this.rootNode;
 				}
 			};
 		}
