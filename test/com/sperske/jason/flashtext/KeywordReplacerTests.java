@@ -52,4 +52,12 @@ class KeywordReplacerTests {
 		assertTrue(keywords.contains("python"));
 		assertTrue(keywords.contains("java"));
 	}
+	@Test
+	void shouldReplaceIfFirstMatchFails() {
+		KeywordProcessor processor = new KeywordProcessor();
+		processor.addKeyword("ab", "12");
+		processor.addKeyword("cd", "34");
+
+		assertEquals("a34", processor.replace("acd"));
+	}
 }
